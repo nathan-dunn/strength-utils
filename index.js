@@ -139,7 +139,8 @@ const makeWarmupObj = (weight, workWeight, extra) => {
 
 const endsInFive = n => n % 10 === 5;
 
-const nearestFive = weight => {
+// exports
+export const nearestFive = weight => {
   if (!weight) return weight;
   weight = Math.round(weight);
   if (endsInFive(weight)) return weight;
@@ -155,9 +156,10 @@ const nearestFive = weight => {
   return endsInFive(upper) ? upper : lower;
 };
 
-// exports
 export const roundTo = (number, round = 1, direction = "round") => {
-  if (direction) return Number(Math[direction](number / round) * round);
+  const dir =
+    direction === "up" ? "ceil" : direction === "down" ? "floor" : "round";
+  return Number(Math[dir](number / round) * round);
 };
 
 export const calculateWeight = (reps, max) => {
