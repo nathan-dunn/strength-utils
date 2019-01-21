@@ -8,12 +8,6 @@ const plates = {
   25: 1
 };
 
-const roundTo = (number, round = 2.5, direction) => {
-  const dir =
-    direction === "up" ? "ceil" : (direction = "down" ? "floor" : "round");
-  return Number(Math[direction](number / round) * round);
-};
-
 const powerSet = arr => {
   let results = [null];
 
