@@ -1,9 +1,12 @@
 {
   "name": "strength-utils",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Small utility library for barbell training calculations",
   "main": "index.js",
   "author": "Nathan Dunn",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "dependencies": {
+    "lodash": "^4.17.11"
+  }
 }
