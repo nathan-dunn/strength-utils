@@ -19,61 +19,61 @@ function powerSet(arr) {
   return results;
 }
 
-function nudgeWeight(load, precision, direction = 'flat') {
-  let result;
-  const originalWeight = load;
-
-  let platesToUse = { ...plates, 5: 2, 2.5: 2 }; // default
-  if (precision === 10) platesToUse = plates;
-  else if (precision === 5) platesToUse = { ...plates, 5: 2 };
-  else if (precision === 2.5) platesToUse = { ...plates, 5: 2, 2.5: 2 };
-  else if (precision === 1.25)
-    platesToUse = { ...plates, 5: 2, 2.5: 2, 1.25: 2 };
-  else console.log('PRECISION options are: 10, 5, 2,5, 1.25');
-
-  const loads = makePossibleLoads(platesToUse);
-
-  const minLoad = loads[0];
-  const maxLoad = loads[loads.length - 1];
-  let counter = 0;
-
-  //recursively move the wt up and down to find a matching easyload
-  const recurse = (load, s = true) => {
-    load = roundTo(load);
-    //base cases
-    if (loads.includes(load)) {
-      result = load;
-      return;
-    } else if (load < minLoad) {
-      result = roundTo(originalWeight, 2.5);
-      return;
-    } else if (load > maxLoad) {
-      result = roundTo(originalWeight, 5);
-      return;
-    }
-
-    //recursive cases
-    if (direction === 'down') {
-      load--;
-      recurse(load);
-    } else if (direction === 'up') {
-      load++;
-      recurse(load);
-    } else if (direction === 'flat') {
-      if (s) {
-        counter++;
-        recurse(load + counter, !s);
-      } else if (!s) {
-        counter++;
-        recurse(load + counter * -1, !s);
-      }
-    }
-  };
-
-  recurse(load);
-
-  return result;
-}
+// function nudgeWeight(load, precision, direction = 'flat') {
+//   let result;
+//   const originalWeight = load;
+//
+//   let platesToUse = { ...plates, 5: 2, 2.5: 2 }; // default
+//   if (precision === 10) platesToUse = plates;
+//   else if (precision === 5) platesToUse = { ...plates, 5: 2 };
+//   else if (precision === 2.5) platesToUse = { ...plates, 5: 2, 2.5: 2 };
+//   else if (precision === 1.25)
+//     platesToUse = { ...plates, 5: 2, 2.5: 2, 1.25: 2 };
+//   else console.log('PRECISION options are: 10, 5, 2,5, 1.25');
+//
+//   const loads = makePossibleLoads(platesToUse);
+//
+//   const minLoad = loads[0];
+//   const maxLoad = loads[loads.length - 1];
+//   let counter = 0;
+//
+//   //recursively move the wt up and down to find a matching easyload
+//   const recurse = (load, s = true) => {
+//     load = roundTo(load);
+//     //base cases
+//     if (loads.includes(load)) {
+//       result = load;
+//       return;
+//     } else if (load < minLoad) {
+//       result = roundTo(originalWeight, 2.5);
+//       return;
+//     } else if (load > maxLoad) {
+//       result = roundTo(originalWeight, 5);
+//       return;
+//     }
+//
+//     //recursive cases
+//     if (direction === 'down') {
+//       load--;
+//       recurse(load);
+//     } else if (direction === 'up') {
+//       load++;
+//       recurse(load);
+//     } else if (direction === 'flat') {
+//       if (s) {
+//         counter++;
+//         recurse(load + counter, !s);
+//       } else if (!s) {
+//         counter++;
+//         recurse(load + counter * -1, !s);
+//       }
+//     }
+//   };
+//
+//   recurse(load);
+//
+//   return result;
+// }
 
 function endsInFive(n) {
   return n % 10 === 5;

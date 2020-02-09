@@ -1,2 +1,7 @@
+## directories
 node_modules
+
+## files
 .DS_Store
+.env
+.prod.env
