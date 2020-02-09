@@ -1,23 +1,23 @@
 // inports
 
 const constants = require('./constants');
-const { DEFAULT_OPTIONS, PLATES_EASY, LOADS_EASY, LOADS_PRECISE } = constants;
+const { DEFAULT_OPTIONS, LOADS_EASY, LOADS_PRECISE } = constants;
 
 // helpers
-function powerSet(arr) {
-  let results = [null];
-
-  for (let i = 0; i < arr.length; i++) {
-    let len = results.length;
-    for (let j = 0; j < len; j++) {
-      results.push(arr[i] + results[j]);
-    }
-  }
-
-  results.shift();
-  results = results.sort((a, b) => (a < b ? -1 : 1));
-  return results;
-}
+// function powerSet(arr) {
+//   let results = [null];
+//
+//   for (let i = 0; i < arr.length; i++) {
+//     let len = results.length;
+//     for (let j = 0; j < len; j++) {
+//       results.push(arr[i] + results[j]);
+//     }
+//   }
+//
+//   results.shift();
+//   results = results.sort((a, b) => (a < b ? -1 : 1));
+//   return results;
+// }
 
 // function nudgeWeight(load, precision, direction = 'flat') {
 //   let result;
@@ -75,14 +75,14 @@ function powerSet(arr) {
 //   return result;
 // }
 
-function endsInFive(n) {
-  return n % 10 === 5;
-}
+// function endsInFive(n) {
+//   return n % 10 === 5;
+// }
 
-function isConvenient(n) {
-  const convenient = makePossibleLoads(PLATES_EASY);
-  return convenient.includes(n);
-}
+// function isConvenient(n) {
+//   const convenient = makePossibleLoads(PLATES_EASY);
+//   return convenient.includes(n);
+// }
 
 function makePercentage(percentage, places = 2) {
   return Number(percentage.toPrecision(places));
@@ -117,31 +117,31 @@ function calculateMax(weight, reps) {
   return roundTo(weight * reps * 0.033 + weight, 5, 'floor');
 }
 
-function makePossibleLoads(plates, barWeight = 45, cutOff = null) {
-  const makePlatesArr = plates => {
-    const results = [];
-
-    for (let weight in plates) {
-      for (let i = 0; i < plates[weight]; i++) {
-        results.push(Number(weight));
-      }
-    }
-    return results;
-  };
-
-  let results = [barWeight];
-  const ps = powerSet(makePlatesArr(plates));
-
-  for (let p of ps) {
-    results.push(barWeight + 2 * p);
-  }
-
-  if (cutOff) {
-    results = results.filter(result => result <= cutOff);
-  }
-
-  return Array.from(new Set(results));
-}
+// function makePossibleLoads(plates, barWeight = 45, cutOff = null) {
+//   const makePlatesArr = plates => {
+//     const results = [];
+//
+//     for (let weight in plates) {
+//       for (let i = 0; i < plates[weight]; i++) {
+//         results.push(Number(weight));
+//       }
+//     }
+//     return results;
+//   };
+//
+//   let results = [barWeight];
+//   const ps = powerSet(makePlatesArr(plates));
+//
+//   for (let p of ps) {
+//     results.push(barWeight + 2 * p);
+//   }
+//
+//   if (cutOff) {
+//     results = results.filter(result => result <= cutOff);
+//   }
+//
+//   return Array.from(new Set(results));
+// }
 
 function normalizeOptions(options) {
   const entries = Object.entries(options);
@@ -238,9 +238,6 @@ function findNearestLoad(weight, workWeight, last = false) {
   let [low, high] = findLowAndHigh(weight, LOADS_EASY);
   nearestLoad = high - weight < weight - low ? high : low;
   const percentage = nearestLoad / weight;
-
-  // TODO: - !!
-  return nearestLoad;
 
   if (percentage >= lowerPercentage && percentage <= upperPercentage) {
     return nearestLoad;
