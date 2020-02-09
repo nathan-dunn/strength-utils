@@ -4,15 +4,15 @@ module.exports = {
   entry: './src/index.js',
   output: {
     filename: 'index.js',
-    path: path.resolve(__dirname, './'),
-    publicPath: './',
+    path: path.resolve(__dirname, ''),
+    publicPath: '/',
   },
   // add the babel-loader and presets
   module: {
     rules: [
       {
         test: /\.jsx?$/,
-        exclude: /node_modules/,
+        // exclude: /node_modules/,
         use: [
           {
             loader: 'babel-loader',

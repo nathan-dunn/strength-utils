@@ -1,1 +1,306 @@
-!function(e){var r={};function t(n){if(r[n])return r[n].exports;var o=r[n]={i:n,l:!1,exports:{}};return e[n].call(o.exports,o,o.exports,t),o.l=!0,o.exports}t.m=e,t.c=r,t.d=function(e,r,n){t.o(e,r)||Object.defineProperty(e,r,{enumerable:!0,get:n})},t.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},t.t=function(e,r){if(1&r&&(e=t(e)),8&r)return e;if(4&r&&"object"==typeof e&&e&&e.__esModule)return e;var n=Object.create(null);if(t.r(n),Object.defineProperty(n,"default",{enumerable:!0,value:e}),2&r&&"string"!=typeof e)for(var o in e)t.d(n,o,function(r){return e[r]}.bind(null,o));return n},t.n=function(e){var r=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(r,"a",r),r},t.o=function(e,r){return Object.prototype.hasOwnProperty.call(e,r)},t.p="./",t(t.s=0)}([function(e,r,t){function n(e,r){var t=Object.keys(e);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(e);r&&(n=n.filter((function(r){return Object.getOwnPropertyDescriptor(e,r).enumerable}))),t.push.apply(t,n)}return t}function o(e){for(var r=1;r<arguments.length;r++){var t=null!=arguments[r]?arguments[r]:{};r%2?n(Object(t),!0).forEach((function(r){u(e,r,t[r])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(t)):n(Object(t)).forEach((function(r){Object.defineProperty(e,r,Object.getOwnPropertyDescriptor(t,r))}))}return e}function u(e,r,t){return r in e?Object.defineProperty(e,r,{value:t,enumerable:!0,configurable:!0,writable:!0}):e[r]=t,e}function c(e,r){return function(e){if(Array.isArray(e))return e}(e)||function(e,r){if(!(Symbol.iterator in Object(e)||"[object Arguments]"===Object.prototype.toString.call(e)))return;var t=[],n=!0,o=!1,u=void 0;try{for(var c,i=e[Symbol.iterator]();!(n=(c=i.next()).done)&&(t.push(c.value),!r||t.length!==r);n=!0);}catch(e){o=!0,u=e}finally{try{n||null==i.return||i.return()}finally{if(o)throw u}}return t}(e,r)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance")}()}var i=t(1),a=i.DEFAULT_OPTIONS,f=i.LOADS_EASY,l=i.LOADS_PRECISE;function p(e){var r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:2;return Number(e.toPrecision(r))}function b(e){var r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:1,t=arguments.length>2&&void 0!==arguments[2]?arguments[2]:"round",n="up"===t?"ceil":"down"===t?"floor":"round";return Number(Math[n](e/r)*r)}function O(e){var r=Object.entries(e).map((function(e){var r=c(e,2),t=r[0],n=r[1];return t=t.toUpperCase(),"string"==typeof n&&(n=n.toUpperCase()),"TRUE"===n&&(n=!0),"FALSE"===n&&(n=!1),n==Number(n)&&(n=Number(n)),[t,n]}));return Object.fromEntries(r)}function s(e,r){var t=function(e){var r=45;return e<90&&(r=25),r}(e),n=t;if(["DL","DEADLIFT"].includes(String(r).toUpperCase())){var o=90;(t+o)/e>.5&&(o=50),(t+o)/e>.5&&(o=20),n=t+o}return n}function v(e,r){for(var t=[r,r],n=e-r,o=4,u=n/o;u>90;)u=n/++o;for(var c=1;c<o;c++){var i=b(t[t.length-1]+u,1);t.push(i)}return t}function y(e,r){for(var t=null,n=null,o=0;o<r.length;o++){var u=r[o];if(u>e){n=u,o>0&&(t=r[o-1]);break}}return[t,n]}function g(e,r){var t=arguments.length>2&&void 0!==arguments[2]&&arguments[2],n=e,o=e/r,u=.05,i=t?.8:o-u,a=t?.9:o+u,p=y(e,f),b=c(p,2),O=b[0],s=b[1],v=(n=s-e<e-O?s:O)/e;if(v>=i&&v<=a)return n;var g=y(e,l),d=c(g,2);return O=d[0],n=(s=d[1])-e<e-O?s:O}e.exports={findWarmups:function(e){var r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:"",t=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{};t=O(o({},a,{},t,{workWeight:e,liftName:r}));var n=s(e,r),u=v(e,n),c=u.map((function(r){return p(r/e)})),i=[5,5,5,3,2,1],f=u.map((function(r,t,n){var o=t===n.length-1;return g(r,e,o)})),l=f.map((function(r){return p(r/e)})),b=f.map((function(e,r){return{weight:e,reps:i[r]||1,percentage:l[r],exactWeight:u[r],exactPercentage:c[r]}})),y="".concat(r," ").concat(b.map((function(e){return"".concat(e.weight,"x").concat(e.reps)})).concat(["".concat(e,"xRX")]).join(","));return{warmups:b,text:y}},calculateWeightNeeded:function(e,r){return e=Number(e),r=Number(r),e&&r?b(r/(.033*e+1),2.5,"ceil"):""},calculateRepsNeeded:function(e,r){if(e=Number(e),r=Number(r),!e||!r)return"";if(e>r)return 1;var t=b((r-e)/(.033*e),1,"ceil");return t<=0?"1*":t},calculateMax:function(e,r){return e=Number(e),r=Number(r),e&&r?b(e*r*.033+e,5,"floor"):""}}},function(e,r){function t(e,r){var t=Object.keys(e);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(e);r&&(n=n.filter((function(r){return Object.getOwnPropertyDescriptor(e,r).enumerable}))),t.push.apply(t,n)}return t}function n(e,r,t){return r in e?Object.defineProperty(e,r,{value:t,enumerable:!0,configurable:!0,writable:!0}):e[r]=t,e}var o={45:9,25:1,10:2,5:1},u=function(e){for(var r=1;r<arguments.length;r++){var o=null!=arguments[r]?arguments[r]:{};r%2?t(Object(o),!0).forEach((function(r){n(e,r,o[r])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(o)):t(Object(o)).forEach((function(r){Object.defineProperty(e,r,Object.getOwnPropertyDescriptor(o,r))}))}return e}({},o,{2.5:1});e.exports={DEFAULT_OPTIONS:{method:"BASIC"},PLATES_EASY:o,PLATES_PRECISE:u,LOADS_EASY:[45,55,65,75,85,95,105,115,125,135,145,155,165,175,185,195,205,215,225,235,245,255,265,275,285,295,305,315,325,335,345,355,365,375,385,395,405,415,425,435,445,455,465,475,485,495,505,515,525,535,545,555,565,575,585,595,605,615,625,635,645,655,665,675,685,695,705,715,725,735,745,755,765,775,785,795,805,815,825,835,845,855,865,875,885,895,905,915,925,935,945,955],LOADS_PRECISE:[45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,260,265,270,275,280,285,290,295,300,305,310,315,320,325,330,335,340,345,350,355,360,365,370,375,380,385,390,395,400,405,410,415,420,425,430,435,440,445,450,455,460,465,470,475,480,485,490,495,500,505,510,515,520,525,530,535,540,545,550,555,560,565,570,575,580,585,590,595,600,605,610,615,620,625,630,635,640,645,650,655,660,665,670,675,680,685,690,695,700,705,710,715,720,725,730,735,740,745,750,755,760,765,770,775,780,785,790,795,800,805,810,815,820,825,830,835,840,845,850,855,860,865,870,875,880,885,890,895,900,905,910,915,920,925,930,935,940,945,950,955,960]}}]);
+// inports
+
+const constants = require('./constants');
+const { DEFAULT_OPTIONS, LOADS_EASY, LOADS_PRECISE } = constants;
+
+// helpers
+// function powerSet(arr) {
+//   let results = [null];
+//
+//   for (let i = 0; i < arr.length; i++) {
+//     let len = results.length;
+//     for (let j = 0; j < len; j++) {
+//       results.push(arr[i] + results[j]);
+//     }
+//   }
+//
+//   results.shift();
+//   results = results.sort((a, b) => (a < b ? -1 : 1));
+//   return results;
+// }
+
+// function nudgeWeight(load, precision, direction = 'flat') {
+//   let result;
+//   const originalWeight = load;
+//
+//   let platesToUse = { ...plates, 5: 2, 2.5: 2 }; // default
+//   if (precision === 10) platesToUse = plates;
+//   else if (precision === 5) platesToUse = { ...plates, 5: 2 };
+//   else if (precision === 2.5) platesToUse = { ...plates, 5: 2, 2.5: 2 };
+//   else if (precision === 1.25)
+//     platesToUse = { ...plates, 5: 2, 2.5: 2, 1.25: 2 };
+//   else console.log('PRECISION options are: 10, 5, 2,5, 1.25');
+//
+//   const loads = makePossibleLoads(platesToUse);
+//
+//   const minLoad = loads[0];
+//   const maxLoad = loads[loads.length - 1];
+//   let counter = 0;
+//
+//   //recursively move the wt up and down to find a matching easyload
+//   const recurse = (load, s = true) => {
+//     load = roundTo(load);
+//     //base cases
+//     if (loads.includes(load)) {
+//       result = load;
+//       return;
+//     } else if (load < minLoad) {
+//       result = roundTo(originalWeight, 2.5);
+//       return;
+//     } else if (load > maxLoad) {
+//       result = roundTo(originalWeight, 5);
+//       return;
+//     }
+//
+//     //recursive cases
+//     if (direction === 'down') {
+//       load--;
+//       recurse(load);
+//     } else if (direction === 'up') {
+//       load++;
+//       recurse(load);
+//     } else if (direction === 'flat') {
+//       if (s) {
+//         counter++;
+//         recurse(load + counter, !s);
+//       } else if (!s) {
+//         counter++;
+//         recurse(load + counter * -1, !s);
+//       }
+//     }
+//   };
+//
+//   recurse(load);
+//
+//   return result;
+// }
+
+// function endsInFive(n) {
+//   return n % 10 === 5;
+// }
+
+// function isConvenient(n) {
+//   const convenient = makePossibleLoads(PLATES_EASY);
+//   return convenient.includes(n);
+// }
+
+function makePercentage(percentage, places = 2) {
+  return Number(percentage.toPrecision(places));
+}
+
+function roundTo(number, round = 1, direction = 'round') {
+  const dir =
+    direction === 'up' ? 'ceil' : direction === 'down' ? 'floor' : 'round';
+  return Number(Math[dir](number / round) * round);
+}
+
+function calculateWeightNeeded(reps, max) {
+  reps = Number(reps);
+  max = Number(max);
+  if (!reps || !max) return '';
+  return roundTo(max / (reps * 0.033 + 1), 2.5, 'ceil');
+}
+
+function calculateRepsNeeded(weight, max) {
+  weight = Number(weight);
+  max = Number(max);
+  if (!weight || !max) return '';
+  if (weight > max) return 1;
+  const result = roundTo((max - weight) / (weight * 0.033), 1, 'ceil');
+  return result <= 0 ? '1*' : result;
+}
+
+function calculateMax(weight, reps) {
+  weight = Number(weight);
+  reps = Number(reps);
+  if (!weight || !reps) return '';
+  return roundTo(weight * reps * 0.033 + weight, 5, 'floor');
+}
+
+// function makePossibleLoads(plates, barWeight = 45, cutOff = null) {
+//   const makePlatesArr = plates => {
+//     const results = [];
+//
+//     for (let weight in plates) {
+//       for (let i = 0; i < plates[weight]; i++) {
+//         results.push(Number(weight));
+//       }
+//     }
+//     return results;
+//   };
+//
+//   let results = [barWeight];
+//   const ps = powerSet(makePlatesArr(plates));
+//
+//   for (let p of ps) {
+//     results.push(barWeight + 2 * p);
+//   }
+//
+//   if (cutOff) {
+//     results = results.filter(result => result <= cutOff);
+//   }
+//
+//   return Array.from(new Set(results));
+// }
+
+function normalizeOptions(options) {
+  const entries = Object.entries(options);
+  const normalized = entries.map(entry => {
+    let [key, value] = entry;
+    key = key.toUpperCase();
+    if (typeof value === 'string') value = value.toUpperCase();
+    if (value === 'TRUE') value = true;
+    if (value === 'FALSE') value = false;
+    if (value == Number(value)) value = Number(value);
+
+    return [key, value];
+  });
+
+  const normalizedOptions = Object.fromEntries(normalized);
+  return normalizedOptions;
+}
+
+function findBarWeight(workWeight) {
+  let barWeight = 45;
+  if (workWeight < 90) {
+    barWeight = 25;
+  }
+  return barWeight;
+}
+
+function findBase(workWeight, liftName) {
+  const barWeight = findBarWeight(workWeight);
+  let base = barWeight;
+
+  const isDeadlift = ['DL', 'DEADLIFT'].includes(
+    String(liftName).toUpperCase()
+  );
+
+  if (isDeadlift) {
+    let riserPlates = 90;
+    if ((barWeight + riserPlates) / workWeight > 0.5) riserPlates = 50;
+    if ((barWeight + riserPlates) / workWeight > 0.5) riserPlates = 20;
+    base = barWeight + riserPlates;
+  }
+
+  return base;
+}
+
+function findExactWeights(workWeight, base) {
+  const exactWeights = [base, base];
+
+  const diff = workWeight - base;
+  let numberOfJumps = 4;
+  let jump = diff / numberOfJumps;
+  const maxJump = 90;
+
+  while (jump > maxJump) {
+    numberOfJumps++;
+    jump = diff / numberOfJumps;
+  }
+
+  for (let i = 1; i < numberOfJumps; i++) {
+    const last = exactWeights[exactWeights.length - 1];
+    const weight = roundTo(last + jump, 1);
+    exactWeights.push(weight);
+  }
+
+  return exactWeights;
+}
+
+function findLowAndHigh(weight, loads) {
+  let low = null;
+  let hi = null;
+
+  for (let i = 0; i < loads.length; i++) {
+    let load = loads[i];
+    if (load > weight) {
+      hi = load;
+      if (i > 0) {
+        low = loads[i - 1];
+      }
+      break;
+    }
+  }
+
+  return [low, hi];
+}
+
+function findNearestLoad(weight, workWeight, last = false) {
+  let nearestLoad = weight;
+
+  const exactPercentage = weight / workWeight;
+  const defaultRange = 0.05;
+  const lowerPercentage = last ? 0.8 : exactPercentage - defaultRange;
+  const upperPercentage = last ? 0.9 : exactPercentage + defaultRange;
+
+  // let percentage = nearest / workWeight;
+  let [low, high] = findLowAndHigh(weight, LOADS_EASY);
+  nearestLoad = high - weight < weight - low ? high : low;
+  const percentage = nearestLoad / weight;
+
+  if (percentage >= lowerPercentage && percentage <= upperPercentage) {
+    return nearestLoad;
+  } else {
+    [low, high] = findLowAndHigh(weight, LOADS_PRECISE);
+    nearestLoad = high - weight < weight - low ? high : low;
+    return nearestLoad;
+  }
+}
+
+function findWarmups(workWeight, liftName = '', options = {}) {
+  options = normalizeOptions({
+    ...DEFAULT_OPTIONS,
+    ...options,
+    workWeight,
+    liftName,
+  });
+
+  const base = findBase(workWeight, liftName);
+
+  const exactWeights = findExactWeights(workWeight, base);
+
+  const exactPercentages = exactWeights.map(weight =>
+    makePercentage(weight / workWeight)
+  );
+
+  const repsArr = [5, 5, 5, 3, 2, 1];
+
+  const roundedWeights = exactWeights.map((exactWeight, index, arr) => {
+    const last = index === arr.length - 1;
+
+    const weight = findNearestLoad(exactWeight, workWeight, last);
+    return weight;
+  });
+
+  const roundedPercentages = roundedWeights.map(weight =>
+    makePercentage(weight / workWeight)
+  );
+
+  const warmups = roundedWeights.map((weight, index) => {
+    const reps = repsArr[index] || 1;
+    const percentage = roundedPercentages[index];
+    const exactWeight = exactWeights[index];
+    const exactPercentage = exactPercentages[index];
+
+    return { weight, reps, percentage, exactWeight, exactPercentage };
+  });
+
+  const text = `${liftName} ${warmups
+    .map(warmup => `${warmup.weight}x${warmup.reps}`)
+    .concat([`${workWeight}xRX`])
+    .join(',')}`;
+
+  return {
+    warmups,
+    text,
+  };
+}
+
+// exports
+module.exports = {
+  findWarmups,
+  calculateWeightNeeded,
+  calculateRepsNeeded,
+  calculateMax,
+};
