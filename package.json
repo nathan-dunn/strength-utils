@@ -1,16 +1,27 @@
 {
-  "name": "@tru3rit/strength-utils",
-  "version": "2.0.0",
+  "name": "@tru36rit/strength-utils",
+  "version": "1.0.0",
   "description": "Small utility library for barbell training calculations",
-  "main": "index.js",
-  "author": "Nathan Dunn",
-  "license": "MIT",
-  "private": false,
+  "main": "prettierrc.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nathan-dunn/strength-utils"
+    "url": "git+https://github.com/nathan-dunn/strength-utils.git"
   },
+  "keywords": [
+    "strength",
+    "barbell",
+    "warmup"
+  ],
+  "author": "Nathan Dunn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nathan-dunn/strength-utils/issues"
+  },
+  "homepage": "https://github.com/nathan-dunn/strength-utils#readme",
   "dependencies": {
-    "lodash": "4.17.15"
+    "lodash": "^4.17.15"
   }
 }
