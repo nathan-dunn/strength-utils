@@ -289,7 +289,7 @@ function findWarmups(workWeight, liftName = '', options = {}) {
   const text = `${liftName} ${warmups
     .map(warmup => `${warmup.weight}x${warmup.reps}`)
     .concat([`${workWeight}xRX`])
-    .join(',')}`;
+    .join(', ')}`;
 
   return {
     warmups,
