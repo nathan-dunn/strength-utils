@@ -180,7 +180,7 @@ function findWarmupsMethod1(lift, workWeight, options) {
   const diff = workWeight - base;
   let numberOfJumps = 4;
   let jump = diff / numberOfJumps;
-  const maxJump = 50;
+  const maxJump = options.maxJump;
 
   while (jump > maxJump) {
     numberOfJumps++;
@@ -293,7 +293,6 @@ function findWarmups(
   options = DEFAULT_OPTIONS
 ) {
   handleWarmupErrors(lift, workWeight, method);
-  options = normalizeOptions(options);
 
   let warmups = [];
 

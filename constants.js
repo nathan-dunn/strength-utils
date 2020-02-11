@@ -1,4 +1,6 @@
-const DEFAULT_OPTIONS = {};
+const DEFAULT_OPTIONS = {
+  maxJump: 50,
+};
 
 const PLATES_1 = {
   45: 9,
