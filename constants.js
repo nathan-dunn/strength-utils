@@ -1,5 +1,6 @@
 const DEFAULT_OPTIONS = {
   maxJump: 50,
+  unique: false,
 };
 
 const PLATES_1 = {

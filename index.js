@@ -209,6 +209,7 @@ function findWarmupsMethod1(lift, workWeight, options) {
     percentage: makePercentage(base / workWeight),
     level: findLevel(LOADS, base),
     sets: 2,
+    base: true,
   };
 
   const warmupsWithoutBase = exactLoads.map((exactLoad, index) => {
@@ -240,6 +241,7 @@ function findWarmupsMethod2(lift, workWeight, options) {
     percentage: makePercentage(base / workWeight),
     level: findLevel(LOADS, base),
     sets: 2,
+    base: true,
   };
 
   const warmupsWithoutBase = exactLoads.map((exactLoad, index) => {
@@ -282,6 +284,7 @@ function findWarmupsMethod3(lift, workWeight, options) {
     percentage: makePercentage(base / workWeight),
     level: findLevel(LOADS, base),
     sets: 2,
+    base: true,
   };
 
   const warmupsWithoutBase = loads.map((load, index) => {
@@ -314,7 +317,9 @@ function findWarmups(
     warmups = findWarmupsMethod3(lift, workWeight, options);
   }
 
-  warmups = uniqBy(warmups.reverse(), 'load').reverse();
+  if (options.unique === true) {
+    warmups = uniqBy(warmups.reverse(), 'load').reverse();
+  }
 
   return warmups;
 }
