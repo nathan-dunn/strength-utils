@@ -1,6 +1,6 @@
 {
   "name": "@tru36rit/strength-utils",
-  "version": "1.7.0",
+  "version": "2.0.0",
   "description": "Small utility library for barbell training calculations",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,8 @@
   "keywords": [
     "strength",
     "barbell",
-    "warmup"
+    "warmup",
+    "calculator"
   ],
   "author": "Nathan Dunn",
   "license": "ISC",
@@ -24,12 +25,5 @@
   "homepage": "https://github.com/nathan-dunn/strength-utils#readme",
   "dependencies": {
     "lodash": "^4.17.15"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.8.4",
-    "@babel/preset-env": "^7.8.4",
-    "babel-loader": "^8.0.6",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
   }
 }
