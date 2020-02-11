@@ -178,12 +178,11 @@ function findWarmupsMethod1(lift, workWeight, options) {
 
   let exactLoads = [];
 
-  const cheat = find(CHEAT_SHEET, {
-    workWeight,
-  });
+  const lookup = find(CHEAT_SHEET, { workWeight });
+  console.log('*', lookup);
 
-  if (cheat) {
-    exactLoads = cheat.warmups;
+  if (options.cheat === true && lookup) {
+    exactLoads = lookup.warmups;
   } else {
     const diff = workWeight - base;
     let numberOfJumps = 4;
@@ -212,7 +211,10 @@ function findWarmupsMethod1(lift, workWeight, options) {
 
   const warmupsWithoutBase = exactLoads.map((exactLoad, index) => {
     const range = findRange(exactLoad, 5, workWeight * 0.9);
-    const load = cheat ? exactLoad : findBestLoad(range, exactLoad);
+    const load =
+      options.cheat === true && lookup
+        ? exactLoad
+        : findBestLoad(range, exactLoad);
     const reps = repsArr[index] || 1;
     const percentage = makePercentage(load / workWeight);
     const level = findLevel(LOADS, load);
