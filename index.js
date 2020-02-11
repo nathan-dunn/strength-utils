@@ -219,7 +219,7 @@ function findWarmupsMethod1(lift, workWeight, options) {
     return { load, reps, percentage, level };
   });
 
-  const warmups = [baseObj, ...warmupsWithoutBase];
+  const warmups = [baseObj, baseObj, ...warmupsWithoutBase];
   return warmups;
 }
 
@@ -249,7 +249,7 @@ function findWarmupsMethod2(lift, workWeight, options) {
     return { load, reps, percentage, level };
   });
 
-  const warmups = [baseObj, ...warmupsWithoutBase];
+  const warmups = [baseObj, baseObj, ...warmupsWithoutBase];
   return warmups;
 }
 
@@ -288,7 +288,7 @@ function findWarmupsMethod3(lift, workWeight, options) {
     return { load, reps, percentage, level };
   });
 
-  const warmups = [baseObj, ...warmupsWithoutBase];
+  const warmups = [baseObj, baseObj, ...warmupsWithoutBase];
   return warmups;
 }
 
