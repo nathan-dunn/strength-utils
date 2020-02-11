@@ -20,11 +20,10 @@ const PLATES_3 = {
 };
 
 const CHEAT_SHEET = [
-  { lift: 'SQ', workWeight: 225, warmups: [95, 135, 185] },
-  { lift: 'BP', workWeight: 175, warmups: [85, 125, 155] },
-  { lift: 'DL', workWeight: 315, warmups: [185, 225, 275] },
-  { lift: 'PR', workWeight: 135, warmups: [75, 95, 115] },
-  { lift: 'PC', workWeight: 135, warmups: [75, 95, 115] },
+  { workWeight: 135, warmups: [75, 95, 115] },
+  { workWeight: 175, warmups: [85, 125, 155] },
+  { workWeight: 225, warmups: [95, 135, 185] },
+  { workWeight: 315, warmups: [185, 225, 275] },
 ];
 
 const LOADS = [

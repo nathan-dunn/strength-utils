@@ -179,7 +179,6 @@ function findWarmupsMethod1(lift, workWeight, options) {
   let exactLoads = [];
 
   const cheat = find(CHEAT_SHEET, {
-    lift: String(lift).toUpperCase(),
     workWeight,
   });
 
