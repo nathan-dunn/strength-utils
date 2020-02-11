@@ -18,6 +18,14 @@ const PLATES_3 = {
   2.5: 1,
 };
 
+const CHEAT_SHEET = [
+  { lift: 'SQ', workWeight: 225, warmups: [95, 135, 185] },
+  { lift: 'BP', workWeight: 175, warmups: [85, 125, 155] },
+  { lift: 'DL', workWeight: 315, warmups: [185, 225, 275] },
+  { lift: 'PR', workWeight: 135, warmups: [75, 95, 115] },
+  { lift: 'PC', workWeight: 135, warmups: [75, 95, 115] },
+];
+
 const LOADS = [
   { load: 5, level: 3 },
   { load: 10, level: 3 },
@@ -227,4 +235,5 @@ module.exports = {
   PLATES_2,
   PLATES_3,
   LOADS,
+  CHEAT_SHEET,
 };

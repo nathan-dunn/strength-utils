@@ -3,7 +3,7 @@ const findLastIndex = require('lodash/findLastIndex');
 const find = require('lodash/find');
 
 const constants = require('./constants');
-const { DEFAULT_OPTIONS, LOADS } = constants;
+const { DEFAULT_OPTIONS, LOADS, CHEAT_SHEET } = constants;
 
 // helpers
 function powerSet(arr) {
@@ -163,34 +163,43 @@ function findBestLoad(range = [], weight) {
   return weight || roundTo(range[0] + range[1] / 2);
 }
 
-function findRange(weight, diffLow, diffHigh) {
-  const range = [
-    roundTo(weight - diffLow, 5, 'down'),
-    roundTo(weight + diffHigh || diffLow, 5, 'up'),
-  ];
+function findRange(weight, diff, cutOff = Infinity) {
+  const lower = roundTo(weight - diff, 5, 'down');
+  const upper = roundTo(weight + diff, 5, 'up');
+
+  const range = [lower, Math.min(upper, cutOff)];
   return range;
 }
 
 function findWarmupsMethod1(lift, workWeight, options) {
   const base = findBase(lift, workWeight);
-
-  const exactLoads = [];
   const repsArr = [5, 3, 2];
 
-  const diff = workWeight - base;
-  let numberOfJumps = 4;
-  let jump = diff / numberOfJumps;
-  const maxJump = options.maxJump;
+  let exactLoads = [];
 
-  while (jump > maxJump) {
-    numberOfJumps++;
-    jump = diff / numberOfJumps;
-  }
+  const cheat = find(CHEAT_SHEET, {
+    lift: String(lift).toUpperCase(),
+    workWeight,
+  });
 
-  for (let i = 1; i < numberOfJumps; i++) {
-    const last = exactLoads[exactLoads.length - 1] || base;
-    const weight = roundTo(last + jump, 1);
-    exactLoads.push(weight);
+  if (cheat) {
+    exactLoads = cheat.warmups;
+  } else {
+    const diff = workWeight - base;
+    let numberOfJumps = 4;
+    let jump = diff / numberOfJumps;
+    const maxJump = options.maxJump;
+
+    while (jump > maxJump) {
+      numberOfJumps++;
+      jump = diff / numberOfJumps;
+    }
+
+    for (let i = 1; i < numberOfJumps; i++) {
+      const last = exactLoads[exactLoads.length - 1] || base;
+      const weight = roundTo(last + jump, 1);
+      exactLoads.push(weight);
+    }
   }
 
   const baseObj = {
@@ -198,12 +207,12 @@ function findWarmupsMethod1(lift, workWeight, options) {
     reps: 5,
     percentage: makePercentage(base / workWeight),
     level: findLevel(LOADS, base),
-    sets: '1-2',
+    sets: 2,
   };
 
   const warmupsWithoutBase = exactLoads.map((exactLoad, index) => {
-    const range = findRange(exactLoad, 2.5, 5);
-    const load = findBestLoad(range, exactLoad);
+    const range = findRange(exactLoad, 5, workWeight * 0.9);
+    const load = cheat ? exactLoad : findBestLoad(range, exactLoad);
     const reps = repsArr[index] || 1;
     const percentage = makePercentage(load / workWeight);
     const level = findLevel(LOADS, load);
@@ -229,11 +238,11 @@ function findWarmupsMethod2(lift, workWeight, options) {
     reps: 5,
     percentage: makePercentage(base / workWeight),
     level: findLevel(LOADS, base),
-    sets: '1-2',
+    sets: 2,
   };
 
   const warmupsWithoutBase = exactLoads.map((exactLoad, index) => {
-    const range = findRange(exactLoad, 2.5, 5);
+    const range = findRange(exactLoad, 5, workWeight * 0.9);
     const load = findBestLoad(range, exactLoad);
     const reps = repsArr[index] || 1;
     const percentage = makePercentage(load / workWeight);
@@ -272,7 +281,7 @@ function findWarmupsMethod3(lift, workWeight, options) {
     reps: 5,
     percentage: makePercentage(base / workWeight),
     level: findLevel(LOADS, base),
-    sets: '1-2',
+    sets: 2,
   };
 
   const warmupsWithoutBase = loads.map((load, index) => {
