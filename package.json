@@ -1,6 +1,6 @@
 {
   "name": "@tru36rit/strength-utils",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Small utility library for barbell training calculations",
   "main": "index.js",
   "scripts": {

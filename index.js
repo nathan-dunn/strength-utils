@@ -175,7 +175,7 @@ function findWarmupsMethod1(lift, workWeight, options) {
   const base = findBase(lift, workWeight);
 
   const exactLoads = [];
-  const repsArr = [5, 5, 5, 3, 2];
+  const repsArr = [5, 3, 2];
 
   const diff = workWeight - base;
   let numberOfJumps = 4;
@@ -193,42 +193,62 @@ function findWarmupsMethod1(lift, workWeight, options) {
     exactLoads.push(weight);
   }
 
-  const warmups = [base, base, ...exactLoads].map((exactLoad, index) => {
+  const baseObj = {
+    load: base,
+    reps: 5,
+    percentage: makePercentage(base / workWeight),
+    level: findLevel(LOADS, base),
+    sets: '1-2',
+  };
+
+  const warmupsWithoutBase = exactLoads.map((exactLoad, index) => {
     const range = findRange(exactLoad, 2.5, 5);
     const load = findBestLoad(range, exactLoad);
     const reps = repsArr[index] || 1;
     const percentage = makePercentage(load / workWeight);
     const level = findLevel(LOADS, load);
-    return { load, reps, percentage, level };
+    const sets = 1;
+    return { load, reps, percentage, level, sets };
   });
 
+  const warmups = [baseObj, ...warmupsWithoutBase];
   return warmups;
 }
 
 function findWarmupsMethod2(lift, workWeight, options) {
   const base = findBase(lift, workWeight);
   const warmupPercentage = [0.45, 0.65, 0.85];
-  const repsArr = [5, 5, 5, 3, 2];
+  const repsArr = [5, 3, 2];
 
   const exactLoads = warmupPercentage.map(perc => {
     return roundTo(workWeight * perc);
   });
 
-  const warmups = [base, base, ...exactLoads].map((exactLoad, index) => {
+  const baseObj = {
+    load: base,
+    reps: 5,
+    percentage: makePercentage(base / workWeight),
+    level: findLevel(LOADS, base),
+    sets: '1-2',
+  };
+
+  const warmupsWithoutBase = exactLoads.map((exactLoad, index) => {
     const range = findRange(exactLoad, 2.5, 5);
     const load = findBestLoad(range, exactLoad);
     const reps = repsArr[index] || 1;
     const percentage = makePercentage(load / workWeight);
     const level = findLevel(LOADS, load);
-    return { load, reps, percentage, level };
+    const sets = 1;
+    return { load, reps, percentage, level, sets };
   });
 
+  const warmups = [baseObj, ...warmupsWithoutBase];
   return warmups;
 }
 
 function findWarmupsMethod3(lift, workWeight, options) {
   const base = findBase(lift, workWeight);
-  const repsArr = [5, 5, 5, 3, 1];
+  const repsArr = [5, 3, 1];
   const lastSet = roundTo(workWeight * 0.9, 5, 'down');
 
   const loads = [lastSet];
@@ -246,13 +266,23 @@ function findWarmupsMethod3(lift, workWeight, options) {
     }
   }
 
-  const warmups = [base, base, ...loads].map((load, index) => {
+  const baseObj = {
+    load: base,
+    reps: 5,
+    percentage: makePercentage(base / workWeight),
+    level: findLevel(LOADS, base),
+    sets: '1-2',
+  };
+
+  const warmupsWithoutBase = loads.map((load, index) => {
     const reps = repsArr[index] || 1;
     const percentage = makePercentage(load / workWeight);
     const level = findLevel(LOADS, load);
-    return { load, reps, percentage, level };
+    const sets = 1;
+    return { load, reps, percentage, level, sets };
   });
 
+  const warmups = [baseObj, ...warmupsWithoutBase];
   return warmups;
 }
 
