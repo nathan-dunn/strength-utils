@@ -1,6 +1,7 @@
 // inports
 const findLastIndex = require('lodash/findLastIndex');
 const find = require('lodash/find');
+const uniqBy = require('lodash/uniqBy');
 
 const constants = require('./constants');
 const { DEFAULT_OPTIONS, LOADS, CHEAT_SHEET } = constants;
@@ -251,8 +252,7 @@ function findWarmupsMethod2(lift, workWeight, options) {
     return { load, reps, percentage, level, sets };
   });
 
-  const warmups = [...warmupsWithoutBase];
-  if (base < warmupsWithoutBase[0].load) warmups.unshift(baseObj);
+  const warmups = [baseObj, ...warmupsWithoutBase];
   return warmups;
 }
 
@@ -313,6 +313,8 @@ function findWarmups(
   } else if (method === 3) {
     warmups = findWarmupsMethod3(lift, workWeight, options);
   }
+
+  warmups = uniqBy(warmups.reverse(), 'load').reverse();
 
   return warmups;
 }
