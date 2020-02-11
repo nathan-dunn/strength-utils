@@ -1,7 +1,9 @@
 // inports
-const findLastIndex = require('lodash/findLastIndex');
 const find = require('lodash/find');
+const findIndex = require('lodash/findIndex');
+const findLastIndex = require('lodash/findLastIndex');
 const uniqBy = require('lodash/uniqBy');
+const get = require('lodash/get');
 
 const constants = require('./constants');
 const { DEFAULT_OPTIONS, LOADS, CHEAT_SHEET } = constants;
@@ -139,15 +141,15 @@ function handleWarmupErrors(lift, workWeight, method) {
   }
 }
 
-function findLevel(loads, load) {
+function findLevel(loads, load = {}) {
   const level = find(LOADS, obj => obj.load === load).level;
   return level;
 }
 
-function findBestLoad(range = [], weight) {
+function findBestLoad(range = [], startingLevel = 1) {
   const [low, high] = range;
   let index = -1;
-  let level = 1;
+  let level = startingLevel;
 
   while (index < 0 && level <= 3) {
     index = findLastIndex(LOADS, obj => {
@@ -161,7 +163,7 @@ function findBestLoad(range = [], weight) {
   }
 
   // fallback
-  return weight || roundTo(range[0] + range[1] / 2);
+  return roundTo(range[0] + range[1] / 2);
 }
 
 function findRange(weight, diff, cutOff = Infinity) {
@@ -178,10 +180,9 @@ function findWarmupsMethod1(lift, workWeight, options) {
 
   let exactLoads = [];
 
-  const lookup = find(CHEAT_SHEET, { workWeight });
-  console.log('*', lookup);
+  const lookup = options.cheat === true && find(CHEAT_SHEET, { workWeight });
 
-  if (options.cheat === true && lookup) {
+  if (lookup) {
     exactLoads = lookup.warmups;
   } else {
     const diff = workWeight - base;
@@ -209,12 +210,40 @@ function findWarmupsMethod1(lift, workWeight, options) {
     base: true,
   };
 
-  const warmupsWithoutBase = exactLoads.map((exactLoad, index) => {
+  // TODO: - clean up this mess
+  const rounded1 = exactLoads.map(exactLoad => {
     const range = findRange(exactLoad, 5, workWeight * 0.9);
-    const load =
-      options.cheat === true && lookup
-        ? exactLoad
-        : findBestLoad(range, exactLoad);
+    const load = lookup ? exactLoad : findBestLoad(range, 1);
+    return load;
+  });
+
+  const duplicates1 = rounded1.reduce((dupes, round, index, arr) => {
+    return arr.indexOf(round) !== arr.lastIndexOf(round)
+      ? [...dupes, index]
+      : [...dupes];
+  }, []);
+
+  const rounded2 = rounded1.map((round, index) => {
+    if (duplicates1.includes(index)) {
+      const range = findRange(exactLoads[index], 5, workWeight * 0.9);
+      round = lookup ? round : findBestLoad(range, 2);
+    }
+
+    return round;
+  });
+
+  const duplicates2 = rounded2.reduce((dupes, round, index, arr) => {
+    return arr.indexOf(round) !== arr.lastIndexOf(round)
+      ? [...dupes, index]
+      : [...dupes];
+  }, []);
+
+  const warmupsWithoutBase = rounded2.map((load, index) => {
+    if (duplicates2.includes(index)) {
+      const range = findRange(exactLoads[index], 5, workWeight * 0.9);
+      load = lookup ? load : findBestLoad(range, 3);
+    }
+
     const reps = repsArr[index] || 1;
     const percentage = makePercentage(load / workWeight);
     const level = findLevel(LOADS, load);
@@ -242,9 +271,10 @@ function findWarmupsMethod2(lift, workWeight, options) {
     base: true,
   };
 
-  const warmupsWithoutBase = exactLoads.map((exactLoad, index) => {
+  const warmupsWithoutBase = exactLoads.map((exactLoad, index, arr) => {
     const range = findRange(exactLoad, 5, workWeight * 0.9);
-    const load = findBestLoad(range, exactLoad);
+    const last = find(arr, `${index - 1}`);
+    const load = findBestLoad(range, exactLoad, last);
     const reps = repsArr[index] || 1;
     const percentage = makePercentage(load / workWeight);
     const level = findLevel(LOADS, load);
@@ -294,13 +324,12 @@ function findWarmupsMethod3(lift, workWeight, options) {
   return warmups;
 }
 
-function findWarmups(
-  lift = '',
-  workWeight = 0,
-  method = 1,
-  options = DEFAULT_OPTIONS
-) {
+function findWarmups(lift = '', workWeight = 0, method = 1, options) {
   handleWarmupErrors(lift, workWeight, method);
+  options = {
+    ...DEFAULT_OPTIONS,
+    ...options,
+  };
 
   let warmups = [];
 
