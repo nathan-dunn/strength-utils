@@ -242,7 +242,8 @@ function findWarmupsMethod2(lift, workWeight, options) {
     return { load, reps, percentage, level, sets };
   });
 
-  const warmups = [baseObj, ...warmupsWithoutBase];
+  const warmups = [...warmupsWithoutBase];
+  if (base < warmupsWithoutBase[0].load) warmups.unshift(baseObj);
   return warmups;
 }
 
