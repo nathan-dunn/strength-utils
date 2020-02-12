@@ -1,5 +1,5 @@
 const DEFAULT_OPTIONS = {
-  maxJump: 50,
+  maxJump: 90,
   unique: false,
   cheat: true,
 };

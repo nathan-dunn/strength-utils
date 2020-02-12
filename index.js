@@ -1,9 +1,7 @@
 // inports
 const find = require('lodash/find');
-const findIndex = require('lodash/findIndex');
 const findLastIndex = require('lodash/findLastIndex');
 const uniqBy = require('lodash/uniqBy');
-const get = require('lodash/get');
 
 const constants = require('./constants');
 const { DEFAULT_OPTIONS, LOADS, CHEAT_SHEET } = constants;
@@ -102,7 +100,7 @@ function normalizeOptions(options) {
 
 function findBase(lift, workWeight) {
   let barWeight = 45;
-  if (workWeight < 90) barWeight = 25;
+  if (workWeight < 85) barWeight = 25;
   if (workWeight < 50) barWeight = 15;
 
   let base = barWeight;
@@ -111,8 +109,9 @@ function findBase(lift, workWeight) {
 
   if (isDeadlift) {
     let riserPlates = 90;
-    if ((barWeight + riserPlates) / workWeight > 0.5) riserPlates = 50;
-    if ((barWeight + riserPlates) / workWeight > 0.5) riserPlates = 20;
+    const baseCutoff = 0.55;
+    if ((barWeight + riserPlates) / workWeight > baseCutoff) riserPlates = 50;
+    if ((barWeight + riserPlates) / workWeight > baseCutoff) riserPlates = 20;
     base = barWeight + riserPlates;
   }
 
@@ -244,8 +243,8 @@ function findWarmupsMethod1(lift, workWeight, options) {
       load = lookup ? load : findBestLoad(range, 3);
     }
 
-    const reps = repsArr[index] || 1;
     const percentage = makePercentage(load / workWeight);
+    const reps = percentage < 0.9 && repsArr[index] ? repsArr[index] : 1;
     const level = findLevel(LOADS, load);
     return { load, reps, percentage, level };
   });
@@ -273,8 +272,8 @@ function findWarmupsMethod2(lift, workWeight, options) {
 
   const warmupsWithoutBase = exactLoads.map((exactLoad, index, arr) => {
     const range = findRange(exactLoad, 5, workWeight * 0.9);
-    const last = find(arr, `${index - 1}`);
-    const load = findBestLoad(range, exactLoad, last);
+
+    const load = findBestLoad(range);
     const reps = repsArr[index] || 1;
     const percentage = makePercentage(load / workWeight);
     const level = findLevel(LOADS, load);
