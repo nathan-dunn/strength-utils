@@ -1,5 +1,6 @@
 // inports
 const find = require('lodash/find');
+const get = require('lodash/get');
 const findLastIndex = require('lodash/findLastIndex');
 const uniqBy = require('lodash/uniqBy');
 
@@ -141,7 +142,7 @@ function handleWarmupErrors(lift, workWeight, method) {
 }
 
 function findLevel(loads, load = {}) {
-  const level = find(LOADS, obj => obj.load === load).level;
+  const level = get(find(LOADS, obj => obj.load === load), 'level');
   return level;
 }
 
