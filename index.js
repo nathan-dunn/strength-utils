@@ -313,8 +313,17 @@ function findWarmupsMethod3(lift, workWeight, options) {
     base: true,
   };
 
-  const warmupsWithoutBase = loads.map((load, index) => {
-    const reps = repsArr[index] || 1;
+  const warmupsWithoutBase = loads.map((load, index, arr) => {
+    let reps = 1;
+    if (index === 0) {
+      if (arr.length >= 3) reps = 5;
+      else reps = 3;
+    }
+    if (index === 1) {
+      if (arr.length >= 3) reps = 3;
+      else reps = 1;
+    }
+
     const percentage = makePercentage(load / workWeight);
     const level = findLevel(LOADS, load);
     return { load, reps, percentage, level };
