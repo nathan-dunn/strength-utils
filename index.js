@@ -1,13 +1,14 @@
 // inports
-const find = require('lodash/find');
-const get = require('lodash/get');
-const findLastIndex = require('lodash/findLastIndex');
-const uniqBy = require('lodash/uniqBy');
+const { find, findLast } = require('lodash');
 
 const constants = require('./constants');
-const { DEFAULT_OPTIONS, LOADS, CHEAT_SHEET } = constants;
+const { DEFAULT_OPTIONS, LOADS } = constants;
 
 // helpers
+function endsInFive(n) {
+  return n % 10 === 5;
+}
+
 function powerSet(arr) {
   let results = [null];
 
@@ -33,27 +34,31 @@ function roundTo(number, round = 1, direction = 'round') {
   return Number(Math[dir](number / round) * round);
 }
 
-function calculateWeightNeeded(reps, max) {
-  reps = Number(reps);
-  max = Number(max);
-  if (!reps || !max) return '';
-  return roundTo(max / (reps * 0.033 + 1), 2.5, 'ceil');
-}
+function roundToNearestFive(number, direction = 'round') {
+  const dir =
+    direction === 'up' ? 'ceil' : direction === 'down' ? 'floor' : 'round';
 
-function calculateRepsNeeded(weight, max) {
-  weight = Number(weight);
-  max = Number(max);
-  if (!weight || !max) return '';
-  if (weight > max) return 1;
-  const result = roundTo((max - weight) / (weight * 0.033), 1, 'ceil');
-  return result <= 0 ? '1*' : result;
-}
+  let nearestRound = null;
+  let nearestUp = Math[dir](number);
+  let nearestDown = Math[dir](number);
 
-function calculateMax(weight, reps) {
-  weight = Number(weight);
-  reps = Number(reps);
-  if (!weight || !reps) return '';
-  return roundTo(weight * reps * 0.033 + weight, 5, 'floor');
+  while (!endsInFive(nearestUp) || !endsInFive(nearestDown)) {
+    if (!endsInFive(nearestUp)) {
+      nearestUp += 1;
+    } else if (nearestRound === null) {
+      nearestRound = nearestUp;
+    }
+
+    if (!endsInFive(nearestDown)) {
+      nearestDown -= 1;
+    } else if (nearestRound === null) {
+      nearestRound = nearestDown;
+    }
+  }
+
+  if (direction === 'up') return nearestUp;
+  else if (direction === 'down') return nearestDown;
+  else nearestRound;
 }
 
 function makePossibleLoads(plates, barWeight = 45, cutOff = null) {
@@ -99,262 +104,172 @@ function normalizeOptions(options) {
   return normalizedOptions;
 }
 
-function findBase(lift, workWeight) {
-  let barWeight = 45;
-  if (workWeight < 85) barWeight = 25;
-  if (workWeight < 50) barWeight = 15;
+function calculateWeightNeeded(reps, max) {
+  reps = Number(reps);
+  max = Number(max);
+  if (!reps || !max) return '';
+  return roundTo(max / (reps * 0.033 + 1), 2.5, 'ceil');
+}
 
-  let base = barWeight;
+function calculateRepsNeeded(weight, max) {
+  weight = Number(weight);
+  max = Number(max);
+  if (!weight || !max) return '';
+  if (weight > max) return 1;
+  const result = roundTo((max - weight) / (weight * 0.033), 1, 'ceil');
+  return result <= 0 ? '1*' : result;
+}
 
+function calculateMax(weight, reps) {
+  weight = Number(weight);
+  reps = Number(reps);
+  if (!weight || !reps) return '';
+  return roundTo(weight * reps * 0.033 + weight, 5, 'floor');
+}
+
+function findLastWarmup(workWeight) {
+  return findLast(
+    LOADS,
+    obj => obj.load < workWeight * 0.9 && endsInFive(obj.load)
+  );
+}
+
+function findWarmups(lift = '', workWeight = 0, options = {}) {
   const isDeadlift = ['DL', 'DEADLIFT'].includes(String(lift).toUpperCase());
+  const workWeightRounded = roundTo(workWeight, 5, 'down');
 
-  if (isDeadlift) {
-    let riserPlates = 90;
-    const baseCutoff = 0.55;
-    if ((barWeight + riserPlates) / workWeight > baseCutoff) riserPlates = 50;
-    if ((barWeight + riserPlates) / workWeight > baseCutoff) riserPlates = 20;
-    base = barWeight + riserPlates;
-  }
-
-  return base;
-}
-
-function handleWarmupErrors(lift, workWeight, method) {
-  const lifts = ['SQ', 'PR', 'BP', 'DL', 'PC', 'OTHER'];
-  if (!lifts.includes(String(lift).toUpperCase())) {
-    throw new Error(
-      `Error: You provided a lift of ${lift}. Valid lifts include: [${lifts}]`
-    );
-  }
-
-  if (!workWeight) {
-    throw new Error(
-      `Error: You provided a workWeight of ${workWeight}.  Valid workWeights must be numbers greater than zero.`
-    );
-  }
-
-  const methods = [1, 2, 3];
-  if (!methods.includes(Number(method))) {
-    throw new Error(
-      `Error: You provided a method of ${method}. Valid methods include: [${methods}]`
-    );
-  }
-}
-
-function findLevel(loads, load = {}) {
-  const level = get(find(LOADS, obj => obj.load === load), 'level');
-  return level;
-}
-
-function findBestLoad(range = [], startingLevel = 1) {
-  const [low, high] = range;
-  let index = -1;
-  let level = startingLevel;
-
-  while (index < 0 && level <= 3) {
-    index = findLastIndex(LOADS, obj => {
-      return obj.level == level && obj.load >= low && obj.load <= high;
-    });
-    level++;
-  }
-
-  if (index > 0) {
-    return LOADS[index].load;
-  }
-
-  // fallback
-  return roundTo(range[0] + range[1] / 2);
-}
-
-function findRange(weight, diff, cutOff = Infinity) {
-  const lower = roundTo(weight - diff, 5, 'down');
-  const upper = roundTo(weight + diff, 5, 'up');
-
-  const range = [lower, Math.min(upper, cutOff)];
-  return range;
-}
-
-function findWarmupsMethod1(lift, workWeight, options) {
-  const base = findBase(lift, workWeight);
-  const repsArr = [5, 3, 2];
-
-  let exactLoads = [];
-
-  const lookup = options.cheat === true && find(CHEAT_SHEET, { workWeight });
-
-  if (lookup) {
-    exactLoads = lookup.warmups;
-  } else {
-    const diff = workWeight - base;
-    let numberOfJumps = 4;
-    let jump = diff / numberOfJumps;
-    const maxJump = options.maxJump;
-
-    while (jump > maxJump) {
-      numberOfJumps++;
-      jump = diff / numberOfJumps;
-    }
-
-    for (let i = 1; i < numberOfJumps; i++) {
-      const last = exactLoads[exactLoads.length - 1] || base;
-      const weight = roundTo(last + jump, 1);
-      exactLoads.push(weight);
-    }
-  }
-
-  const baseObj = {
-    load: base,
-    reps: 5,
-    percentage: makePercentage(base / workWeight),
-    level: findLevel(LOADS, base),
-    base: true,
-  };
-
-  // TODO: - clean up this mess
-  const rounded1 = exactLoads.map(exactLoad => {
-    const range = findRange(exactLoad, 5, workWeight * 0.9);
-    const load = lookup ? exactLoad : findBestLoad(range, 1);
-    return load;
-  });
-
-  const duplicates1 = rounded1.reduce((dupes, round, index, arr) => {
-    return arr.indexOf(round) !== arr.lastIndexOf(round)
-      ? [...dupes, index]
-      : [...dupes];
-  }, []);
-
-  const rounded2 = rounded1.map((round, index) => {
-    if (duplicates1.includes(index)) {
-      const range = findRange(exactLoads[index], 5, workWeight * 0.9);
-      round = lookup ? round : findBestLoad(range, 2);
-    }
-
-    return round;
-  });
-
-  const duplicates2 = rounded2.reduce((dupes, round, index, arr) => {
-    return arr.indexOf(round) !== arr.lastIndexOf(round)
-      ? [...dupes, index]
-      : [...dupes];
-  }, []);
-
-  const warmupsWithoutBase = rounded2.map((load, index) => {
-    if (duplicates2.includes(index)) {
-      const range = findRange(exactLoads[index], 5, workWeight * 0.9);
-      load = lookup ? load : findBestLoad(range, 3);
-    }
-
-    const percentage = makePercentage(load / workWeight);
-    const reps = percentage < 0.9 && repsArr[index] ? repsArr[index] : 1;
-    const level = findLevel(LOADS, load);
-    return { load, reps, percentage, level };
-  });
-
-  const warmups = [baseObj, baseObj, ...warmupsWithoutBase];
-  return warmups;
-}
-
-function findWarmupsMethod2(lift, workWeight, options) {
-  const base = findBase(lift, workWeight);
-  const warmupPercentage = [0.45, 0.65, 0.85];
-  const repsArr = [5, 3, 2];
-
-  const exactLoads = warmupPercentage.map(perc => {
-    return roundTo(workWeight * perc);
-  });
-
-  const baseObj = {
-    load: base,
-    reps: 5,
-    percentage: makePercentage(base / workWeight),
-    level: findLevel(LOADS, base),
-    base: true,
-  };
-
-  const warmupsWithoutBase = exactLoads.map((exactLoad, index, arr) => {
-    const range = findRange(exactLoad, 5, workWeight * 0.9);
-
-    const load = findBestLoad(range);
-    const reps = repsArr[index] || 1;
-    const percentage = makePercentage(load / workWeight);
-    const level = findLevel(LOADS, load);
-    return { load, reps, percentage, level };
-  });
-
-  const warmups = [baseObj, baseObj, ...warmupsWithoutBase];
-  return warmups;
-}
-
-function findWarmupsMethod3(lift, workWeight, options) {
-  const base = findBase(lift, workWeight);
-  const repsArr = [5, 3, 1];
-  const lastSet = roundTo(workWeight * 0.9, 5, 'down');
-
-  const loads = [lastSet];
-  let range = [];
-
-  for (let i = 0; i < 4; i++) {
-    range = [
-      roundTo(loads[0] - workWeight * 0.2),
-      roundTo(loads[0] - workWeight * 0.15),
-    ];
-
-    if (base < range[0]) {
-      const bestLoad = findBestLoad(range);
-      loads.unshift(bestLoad);
-    }
-  }
-
-  const baseObj = {
-    load: base,
-    reps: 5,
-    percentage: makePercentage(base / workWeight),
-    level: findLevel(LOADS, base),
-    base: true,
-  };
-
-  const warmupsWithoutBase = loads.map((load, index, arr) => {
-    let reps = 1;
-    if (index === 0) {
-      if (arr.length >= 3) reps = 5;
-      else reps = 3;
-    }
-    if (index === 1) {
-      if (arr.length >= 3) reps = 3;
-      else reps = 1;
-    }
-
-    const percentage = makePercentage(load / workWeight);
-    const level = findLevel(LOADS, load);
-    return { load, reps, percentage, level };
-  });
-
-  const warmups = [baseObj, baseObj, ...warmupsWithoutBase];
-  return warmups;
-}
-
-function findWarmups(lift = '', workWeight = 0, method = 1, options) {
-  handleWarmupErrors(lift, workWeight, method);
-  options = {
-    ...DEFAULT_OPTIONS,
-    ...options,
-  };
+  // limits
+  if (isDeadlift && workWeightRounded < 95) return null;
+  else if (!isDeadlift && workWeight < 65) return null;
+  if (workWeightRounded > 1000) return null;
 
   let warmups = [];
+  let bar = isDeadlift ? 135 : 45;
+  let acceptableLoadEase = [1];
+  let setLimit = 10;
+  let jump = roundTo(workWeightRounded * 0.1, 5, 'up');
 
-  if (method === 1) {
-    warmups = findWarmupsMethod1(lift, workWeight, options);
-  } else if (method === 2) {
-    warmups = findWarmupsMethod2(lift, workWeight, options);
-  } else if (method === 3) {
-    warmups = findWarmupsMethod3(lift, workWeight, options);
+  if (isDeadlift && jump > 90) jump = 90;
+  else if (!isDeadlift && jump > 40 && jump <= 90) jump = 40;
+  else if (!isDeadlift && jump > 90) jump = 90;
+
+  // adjustments
+  if (isDeadlift) {
+    if (workWeightRounded <= 245) {
+      setLimit = 2;
+      acceptableLoadEase = [1, 2];
+    }
+
+    if (workWeightRounded <= 225 && workWeightRounded > 215) {
+      acceptableLoadEase = [1, 2, 3];
+    }
+
+    if (workWeightRounded <= 215 && workWeightRounded > 165) {
+      acceptableLoadEase = [1];
+    }
+
+    if (workWeightRounded <= 145) {
+      jump = 10;
+      acceptableLoadEase = [1, 2, 3];
+    }
+
+    if (workWeightRounded < 225) {
+      bar = 95;
+    }
+
+    if (workWeightRounded < 135) {
+      bar = 65;
+    }
+  } else if (!isDeadlift) {
+    if (workWeightRounded <= 165) {
+      setLimit = 3;
+      acceptableLoadEase = [1, 2];
+    }
+
+    if (workWeightRounded <= 115) {
+      jump = 10;
+    }
+
+    if (workWeightRounded < 115) {
+      acceptableLoadEase = [1, 2, 3];
+    }
+
+    if (workWeightRounded <= 75) {
+      bar = 25;
+    }
+
+    if (workWeightRounded <= 55) {
+      bar = 15;
+    }
   }
 
-  if (options.unique === true) {
-    warmups = uniqBy(warmups.reverse(), 'load').reverse();
+  // establist last warmup ~ 90%
+  const lastWarmup = findLastWarmup(workWeight);
+  warmups.push(lastWarmup);
+
+  // fill in backwards until you get to the bar
+  while (warmups[0].load > bar) {
+    const load = findLast(LOADS, obj => {
+      const limit = warmups[0].load - jump;
+      return (
+        obj.load <= limit &&
+        acceptableLoadEase.includes(obj.ease) &&
+        endsInFive(obj.load)
+      );
+    });
+
+    if (load && load.load > bar && warmups.length < setLimit) {
+      warmups.unshift(load);
+    } else {
+      break;
+    }
   }
 
-  return warmups;
+  // add percentages
+  warmups = warmups.map(obj => {
+    return { ...obj, percentage: makePercentage(obj.load / workWeight) };
+  });
+
+  // cut out the super light weights unless there aren't enough sets
+  if (warmups.length > 4) {
+    warmups = warmups.filter(obj => {
+      return obj.percentage >= 0.45 || obj.load >= isDeadlift
+        ? 135
+        : 45 || obj.base;
+    });
+  }
+
+  // add the reps
+  warmups = warmups.map((obj, index) => {
+    let reps = 1;
+    if (index === 0) reps = 5;
+    if (index === 1) reps = 3;
+    if (index === 2 && obj.percentage <= 0.85) reps = 2;
+
+    return { ...obj, reps };
+  });
+
+  // add the bar/bas warmups to the front
+  const barObj = find(LOADS, { load: bar });
+  const warmupObj = {
+    ...barObj,
+    percentage: makePercentage(barObj.load / workWeight),
+    reps: 5,
+    base: true,
+  };
+  warmups.unshift(warmupObj);
+  if (!isDeadlift) warmups.unshift(warmupObj);
+
+  // final return
+  return {
+    lift,
+    workWeight,
+    sets: warmups.length,
+    jump,
+    // setLimit,
+    acceptableLoadEase,
+    warmups,
+  };
 }
 
 // exports
@@ -365,3 +280,7 @@ module.exports = {
   calculateRepsNeeded,
   calculateMax,
 };
+
+// console.log(findWarmups('SQ', 155));
+// console.log(findWarmups('BP', 180));
+// console.log(findWarmups('DL', 265));
