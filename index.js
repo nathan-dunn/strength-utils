@@ -58,7 +58,7 @@ function roundToNearestFive(number, direction = 'round') {
 
   if (direction === 'up') return nearestUp;
   else if (direction === 'down') return nearestDown;
-  else nearestRound;
+  else return nearestRound;
 }
 
 function makePossibleLoads(plates, barWeight = 45, cutOff = null) {
