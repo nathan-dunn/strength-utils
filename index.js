@@ -134,7 +134,7 @@ function findLastWarmup(workWeight) {
   );
 }
 
-function findWarmups(lift = '', workWeight = 0, options = {}) {
+function findWarmups(lift = '', workWeight = 0) {
   const isDeadlift = ['DL', 'DEADLIFT'].includes(String(lift).toUpperCase());
   const workWeightRounded = roundTo(workWeight, 5, 'down');
 
@@ -249,7 +249,7 @@ function findWarmups(lift = '', workWeight = 0, options = {}) {
     return { ...obj, reps };
   });
 
-  // add the bar/bas warmups to the front
+  // add the bar/base warmups to the front
   const barObj = find(LOADS, { load: bar });
   const warmupObj = {
     ...barObj,
@@ -266,7 +266,6 @@ function findWarmups(lift = '', workWeight = 0, options = {}) {
     workWeight,
     sets: warmups.length,
     jump,
-    // setLimit,
     acceptableLoadEase,
     warmups,
   };
@@ -280,7 +279,3 @@ module.exports = {
   calculateRepsNeeded,
   calculateMax,
 };
-
-// console.log(findWarmups('SQ', 155));
-// console.log(findWarmups('BP', 180));
-// console.log(findWarmups('DL', 265));

@@ -1,6 +1,6 @@
 {
   "name": "@tru36rit/strength-utils",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Small utility library for barbell training calculations",
   "main": "index.js",
   "scripts": {
@@ -12,10 +12,13 @@
     "url": "git+https://github.com/nathan-dunn/strength-utils.git"
   },
   "keywords": [
-    "strength",
     "barbell",
+    "barbells",
+    "calculator",
+    "strength",
     "warmup",
-    "calculator"
+    "warmups",
+    "weights"
   ],
   "author": "Nathan Dunn",
   "license": "ISC",
