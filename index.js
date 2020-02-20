@@ -139,9 +139,10 @@ function findWarmups(lift = '', workWeight = 0) {
   const workWeightRounded = roundTo(workWeight, 5, 'down');
 
   // limits
-  if (isDeadlift && workWeightRounded < 95) return null;
-  else if (!isDeadlift && workWeight < 65) return null;
-  if (workWeightRounded > 1000) return null;
+  let nullObj = { lift, workWeight, warmups: [] };
+  if (isDeadlift && workWeightRounded < 95) return nullObj;
+  else if (!isDeadlift && workWeight < 65) return nullObj;
+  if (workWeightRounded > 1000) return nullObj;
 
   let warmups = [];
   let bar = isDeadlift ? 135 : 45;
