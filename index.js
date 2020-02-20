@@ -2,7 +2,7 @@
 const { find, findLast } = require('lodash');
 
 const constants = require('./constants');
-const { DEFAULT_OPTIONS, LOADS } = constants;
+const { LOADS, LIFTS } = constants;
 
 // helpers
 function endsInFive(n) {
@@ -272,9 +272,13 @@ function findWarmups(lift = '', workWeight = 0) {
   };
 }
 
+const weights = LOADS.map(load => load.load);
+
 // exports
 module.exports = {
   loads: LOADS,
+  lifts: LIFTS,
+  weights,
   findWarmups,
   calculateWeightNeeded,
   calculateRepsNeeded,

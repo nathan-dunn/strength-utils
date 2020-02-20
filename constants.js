@@ -207,7 +207,10 @@ const LOADS = [
   { load: 960, ease: 4 },
 ];
 
+const LIFTS = ['SQUAT', 'PRESS', 'BENCH', 'DEADLIFT', 'P CLEAN'];
+
 module.exports = {
   DEFAULT_OPTIONS,
   LOADS,
+  LIFTS,
 };
