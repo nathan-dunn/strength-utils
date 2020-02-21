@@ -243,10 +243,17 @@ function findWarmups(lift = '', workWeight = 0) {
   // add the reps
   warmups = warmups.map((obj, index) => {
     let reps = 1;
-    if (index === 0) reps = 5;
-    if (index === 1) reps = 3;
-    if (index === 2 && obj.percentage <= 0.85) reps = 2;
-
+    if (isDeadlift) {
+      if (index === 0 && warmups.length >= 3) reps = 5;
+      else if (index === 0 && warmups.length < 3) reps = 3;
+      else if (index === 1 && warmups.length >= 3) reps = 3;
+      else if (index === 2 && warmups.length < 3 && obj.percentage <= 0.85)
+        reps = 1;
+    } else if (!isDeadlift) {
+      if (index === 0) reps = 5;
+      else if (index === 1) reps = 3;
+      else if (index === 2 && obj.percentage <= 0.85) reps = 2;
+    }
     return { ...obj, reps };
   });
 
@@ -284,3 +291,7 @@ module.exports = {
   calculateRepsNeeded,
   calculateMax,
 };
+
+for (let i = 65; i < 500; i += 5) {
+  console.log(findWarmups('DL', i));
+}
