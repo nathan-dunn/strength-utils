@@ -291,7 +291,3 @@ module.exports = {
   calculateRepsNeeded,
   calculateMax,
 };
-
-for (let i = 65; i < 500; i += 5) {
-  console.log(findWarmups('DL', i));
-}
