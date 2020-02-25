@@ -108,7 +108,7 @@ function calculateWeightNeeded(reps, max) {
   reps = Number(reps);
   max = Number(max);
   if (!reps || !max) return '';
-  return roundTo(max / (reps * 0.033 + 1), 2.5, 'ceil');
+  return roundTo(max / (reps * 0.033 + 1), 1);
 }
 
 function calculateRepsNeeded(weight, max) {
@@ -116,7 +116,7 @@ function calculateRepsNeeded(weight, max) {
   max = Number(max);
   if (!weight || !max) return '';
   if (weight > max) return 1;
-  const result = roundTo((max - weight) / (weight * 0.033), 1, 'ceil');
+  const result = roundTo((max - weight) / (weight * 0.033), 1);
   return result <= 0 ? '1*' : result;
 }
 
@@ -124,7 +124,7 @@ function calculateMax(weight, reps) {
   weight = Number(weight);
   reps = Number(reps);
   if (!weight || !reps) return '';
-  return roundTo(weight * reps * 0.033 + weight, 5, 'floor');
+  return roundTo(weight * reps * 0.033 + weight, 1);
 }
 
 function findLastWarmup(workWeight) {
